@@ -1,0 +1,41 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+# Security Headers
+<IfModule mod_headers.c>
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-Content-Type-Options "nosniff"
+    Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains"
+
+    # Header set Content-Security-Policy ...
+    Header set Referrer-Policy "same-origin"
+    #Header set Feature-Policy "geolocation 'self';"
+    Header set Permissions-Policy "fullscreen=(self), geolocation=*, camera=()"
+    Header always set Content-Security-Policy "default-src *  data: blob: filesystem: about: ws: wss: 'unsafe-inline' 'unsafe-eval'; font-src * fonts.googleapis.com data: blob: 'unsafe-inline'; script-src * cdnjs.cloudflare.com 'unsafe-inline'; style-src * maxcdn.bootstrapcdn.com cdnjs.cloudflare.com cdn.jsdelivr.net fullcalendar.io 'unsafe-inline' 'unsafe-eval'; img-src * data: blob: 'unsafe-inline'; frame-src * data: blob: ; connect-src * data: blob: 'unsafe-inline';"
+    Header always edit Set-Cookie (.*) "$1; HTTPOnly; Secure"
+
+    Header unset ETag
+
+    Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
+</IfModule>
